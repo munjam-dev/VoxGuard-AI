@@ -7,6 +7,8 @@ import type { AnalysisResult } from './api'
 type View = 'overview' | 'history' | 'speakers' | 'settings'
 type HistoryItem = AnalysisResult & { id: string; createdAt: string }
 
+const greeting = (() => { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening' })()
+
 const formatDuration = (seconds: number) => {
   const mins = Math.floor(seconds / 60)
   const secs = Math.round(seconds % 60)
@@ -52,7 +54,7 @@ export function Dashboard({ initialView = 'overview' }: { initialView?: View }) 
     setIsRecording(true)
     recordingTimer.current = setTimeout(() => {
       setIsRecording(false)
-      setError('Recording capture is not connected yet. Upload a WAV or FLAC file for analysis.')
+      setError('Live recording is not available yet. Upload a WAV or FLAC file instead.')
     }, 1500)
   }
 
@@ -95,10 +97,10 @@ export function Dashboard({ initialView = 'overview' }: { initialView?: View }) 
   return (
     <div className={isDark ? 'app-shell' : 'app-shell light'}>
       <aside className="sidebar">
-        <div className="brand">
+        <a className="brand" href="/">
           <div className="brand-mark"><span>V</span></div>
           <div><strong>voxguard</strong><small>voice intelligence</small></div>
-        </div>
+        </a>
         <div className="workspace-switcher"><span className="workspace-dot" /> Personal workspace <span className="chevron">⌄</span></div>
         <nav aria-label="Primary navigation">
           {[
@@ -115,7 +117,7 @@ export function Dashboard({ initialView = 'overview' }: { initialView?: View }) 
         </nav>
         <div className="sidebar-bottom">
           <div className="service-card"><span className="status-dot" /><div><strong>Baseline API</strong><small>{serviceAvailable === false ? 'Unavailable' : 'Connection pending'}</small></div><span className="signal">⌁</span></div>
-          <div className="user-row"><div className="avatar">JD</div><div><strong>Jordan Davis</strong><small>Administrator</small></div><span className="more">•••</span></div>
+          <div className="user-row"><div className="avatar">LU</div><div><strong>Local user</strong><small>This device</small></div><span className="more">•••</span></div>
         </div>
       </aside>
 
@@ -128,8 +130,8 @@ export function Dashboard({ initialView = 'overview' }: { initialView?: View }) 
         {view === 'overview' && (
           <>
             <section className="page-heading">
-              <div><p className="eyebrow">VOICE AUTHENTICITY / TODAY</p><h1>Good morning, Jordan <span>✦</span></h1><p className="subheading">Analyze a recording for voice authenticity and synthetic speech signals.</p></div>
-              <div className="date-chip">⌁ <span>October 7, 2026</span></div>
+              <div><p className="eyebrow">VOICE AUTHENTICITY / TODAY</p><h1>{greeting} <span>✦</span></h1><p className="subheading">Analyze a recording for voice authenticity and synthetic speech signals.</p></div>
+              <div className="date-chip">⌁ <span>{new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span></div>
             </section>
             <section className="stat-grid">
               <StatCard label="Analyses this month" value={history.length.toString().padStart(2, '0')} detail="Local workspace" icon="▥" />

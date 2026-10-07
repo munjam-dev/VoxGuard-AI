@@ -27,16 +27,16 @@ export function Landing() {
   const { scrollYProgress } = useScroll()
   const coreY = useTransform(scrollYProgress, [0, .25], [0, -80])
   const coreScale = useTransform(scrollYProgress, [0, .25], [1, .78])
-  const [scanning, setScanning] = useState(false)
+  const scanning = false
   const [demoPlaying, setDemoPlaying] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const triggerScan = () => { setScanning(true); window.setTimeout(() => setScanning(false), 2400) }
+  
   return <div className="landing">
     <header className="landing-nav">
       <a className="landing-logo" href="/" aria-label="VoxGuard AI home"><span className="shield-wave">⌁</span><span>VOXGUARD <b>AI</b></span></a>
       <button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">☰</button>
       <nav className={menuOpen ? 'landing-links open' : 'landing-links'}>{['Technology', 'How it works', 'Detection', 'Research'].map((item) => <a key={item} href={`#${item.toLowerCase().replaceAll(' ', '-')}`} onClick={() => setMenuOpen(false)}>{item}</a>)}</nav>
-      <div className="nav-actions"><a href="#research" className="nav-signin">Sign in</a><a href="/analyze" className="nav-cta">Analyze voice <span>↗</span></a></div>
+      <div className="nav-actions"><a href="/history" className="nav-signin">History</a><a href="/analyze" className="nav-cta">Analyze voice <span>↗</span></a></div>
     </header>
     <main>
       <section className="hero-section">
@@ -44,7 +44,7 @@ export function Landing() {
           <p className="landing-eyebrow"><i /> AI AUDIO INTELLIGENCE</p>
           <h1>Can You Hear<br /><em>What Isn't Real?</em></h1>
           <p className="hero-subtitle">VoxGuard AI analyzes speech at the acoustic, spectral and neural level to identify signals associated with synthetic and manipulated audio.</p>
-          <div className="hero-actions"><motion.a whileHover={{ scale: 1.02 }} whileTap={{ scale: .98 }} href="/analyze" onClick={triggerScan} className="hero-primary">Analyze a voice <span>↗</span></motion.a><motion.a whileHover={{ scale: 1.02 }} href="#how-it-works" className="hero-secondary">See how it works <span>↓</span></motion.a></div>
+          <div className="hero-actions"><motion.a whileHover={{ scale: 1.02 }} whileTap={{ scale: .98 }} href="/analyze" className="hero-primary">Analyze a voice <span>↗</span></motion.a><motion.a whileHover={{ scale: 1.02 }} href="#how-it-works" className="hero-secondary">See how it works <span>↓</span></motion.a></div>
           <p className="trust-line">◉ &nbsp;Upload WAV, MP3, M4A, FLAC or OGG</p>
         </motion.div>
         <motion.div className="hero-visual" style={{ y: reduced ? 0 : coreY, scale: reduced ? 1 : coreScale }}>
@@ -61,7 +61,7 @@ export function Landing() {
       <section className="research-section"><div className="section-kicker">MODEL NOTES / 001</div><h2>Designed for<br /><span>deeper analysis.</span></h2><div className="research-flow">{['Audio', 'Preprocessing', 'MFCC', 'Spectrogram', 'Deep model', 'Anti-spoof', 'Ensemble'].map((item, i) => <div key={item} className="research-node"><b>{String(i + 1).padStart(2, '0')}</b><span>{item}</span></div>)}</div><div className="research-meta"><span>Sampling rate <b>16 kHz</b></span><span>Feature extraction <b>MFCC + spectral</b></span><span>Inference <b>Neural audio model</b></span><span>Decision <b>Probabilistic</b></span></div></section>
       <section className="final-cta"><div className="cta-wave"><Waveform active /></div><div className="section-kicker">LISTEN CLOSER</div><h2>Hear what<br /><span>isn't obvious.</span></h2><p>Upload a voice and explore the signals hidden inside it.</p><a href="/analyze" className="hero-primary">Analyze a voice <span>↗</span></a></section>
     </main>
-    <footer className="landing-footer"><a className="landing-logo" href="/"><span className="shield-wave">⌁</span><span>VOXGUARD <b>AI</b></span></a><p>AI-powered speech intelligence.</p><div><a href="#technology">Technology</a><a href="#detection">Detection</a><a href="#research">Research</a><a href="#privacy">Privacy</a><a href="#terms">Terms</a><a href="https://github.com" target="_blank" rel="noreferrer">GitHub ↗</a></div></footer>
+    <footer className="landing-footer"><a className="landing-logo" href="/"><span className="shield-wave">⌁</span><span>VOXGUARD <b>AI</b></span></a><p>AI-powered speech intelligence.</p><div><a href="#technology">Technology</a><a href="#detection">Detection</a><a href="#research">Research</a><a href="https://github.com" target="_blank" rel="noreferrer">GitHub ↗</a></div></footer>
   </div>
 }
 
