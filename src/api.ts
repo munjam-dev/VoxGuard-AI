@@ -15,6 +15,16 @@ type AnalysisResponse = {
   serviceAvailable: boolean
 }
 
+class AnalysisApiError extends Error {
+  readonly serviceAvailable: boolean
+
+  constructor(message: string, serviceAvailable: boolean) {
+    super(message)
+    this.name = 'AnalysisApiError'
+    this.serviceAvailable = serviceAvailable
+  }
+}
+
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || '/api'
 const MAX_BYTES = 50 * 1024 * 1024
 const ALLOWED_TYPES = ['audio/wav', 'audio/x-wav', 'audio/flac', 'audio/x-flac']
@@ -32,15 +42,22 @@ export async function analyzeAudio(file: File): Promise<AnalysisResponse> {
   body.append('file', file)
   try {
     const response = await fetch(`${API_URL}/analyze`, { method: 'POST', body })
-    if (!response.ok) throw new Error(`Analysis service returned ${response.status}.`)
+    if (!response.ok) {
+      if (response.status === 413) throw new AnalysisApiError('This recording is larger than 50 MB. Choose a shorter sample.', true)
+      if (response.status === 415) throw new AnalysisApiError('Unsupported format. Choose a WAV or FLAC recording.', true)
+      if (response.status === 400) throw new AnalysisApiError('The uploaded audio file is empty.', true)
+      if (response.status >= 500) throw new AnalysisApiError('The analysis API returned a server error. Try again or check the backend logs.', false)
+      throw new AnalysisApiError(`The analysis API rejected this request (HTTP ${response.status}).`, true)
+    }
     const payload = (await response.json()) as AnalysisResult
     return { result: payload, serviceAvailable: true }
   } catch (error) {
     if (import.meta.env.DEV && import.meta.env.VITE_ENABLE_FIXTURE === 'true') {
       return { result: createFixtureResult(file), serviceAvailable: false }
     }
+    if (error instanceof AnalysisApiError) throw error
     if (error instanceof TypeError) {
-      throw new Error('Baseline API is unavailable. Start the FastAPI service or enable the clearly labeled development fixture.')
+      throw new AnalysisApiError('Baseline API is unavailable. Start the FastAPI service or check the Vercel /api rewrite.', false)
     }
     throw error
   }

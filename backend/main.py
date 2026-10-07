@@ -5,7 +5,6 @@ provided. This keeps the UI honest: no fabricated confidence values are shown.
 """
 
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title="VoxGuard baseline API", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -34,6 +33,8 @@ async def analyze(file: UploadFile = File(...)) -> dict:
     if suffix not in ALLOWED_SUFFIXES:
         raise HTTPException(status_code=415, detail="Only WAV and FLAC files are supported.")
     contents = await file.read(MAX_BYTES + 1)
+    if not contents:
+        raise HTTPException(status_code=400, detail="The uploaded audio file is empty.")
     if len(contents) > MAX_BYTES:
         raise HTTPException(status_code=413, detail="File exceeds the 50 MB limit.")
 
