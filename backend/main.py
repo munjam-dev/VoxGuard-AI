@@ -27,6 +27,12 @@ def health() -> dict[str, str]:
     return {"status": "ok", "model": "unavailable"}
 
 
+@app.get("/api/health")
+def api_health() -> dict[str, str]:
+    """Health alias for requests that arrive through the public /api rewrite."""
+    return health()
+
+
 @app.post("/api/analyze")
 async def analyze(file: UploadFile = File(...)) -> dict:
     suffix = Path(file.filename or "").suffix.lower()
